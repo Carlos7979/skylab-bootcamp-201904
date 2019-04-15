@@ -22,7 +22,7 @@ describe('concat', function () {
         expect(result, array, true);
     });
 
-    it('should break on undefined array', function() {
+    it('should break if the first element is not an array', function() {
         try {
             var a = 1;
             concat(a);

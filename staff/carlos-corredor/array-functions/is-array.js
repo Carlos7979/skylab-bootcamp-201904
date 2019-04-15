@@ -1,7 +1,8 @@
+'use strict'
 /**
  * Indicate if an element is an array.
  * 
- * @param  {Element} element The element to be evaluated.
+ * @param  {*} element The element to be evaluated.
  *  
  * @returns {Boolean} True if the element is an array.
  */

@@ -1,21 +1,24 @@
+'use strict';
 /**
  * Join all the elements within an array.
  * 
- * @param  {Array} arr Array in wich the element will be searched.
- * @param  {Element} separator The element to be separator.
+ * @param  {Array} array Array in wich the element will be searched.
+ * @param  {String} separator The string to be separator.
  * 
  * @returns {String} Returns a string as a result of the union of the elements of the array separated by a comma or another indicated element.
  */
 
-function join(arr, separator = ',') {
+function join(array, separator = ',') {
+    if (!(array instanceof Array)) throw TypeError(array + ' is not an array');
+    if (!(typeof separator === 'string')) throw TypeError(separator + ' is not an string');
     var output = '';
-    for (var i = 0; i < arr.length; i++){
+    for (var i = 0; i < array.length; i++){
         if(i === 0) {
-            output += arr[i];
+            output += array[i];
         } else {
-            output += separator + arr[i];
+            output += separator + array[i];
         }
-    }
+    };
     return output;
 }
 
