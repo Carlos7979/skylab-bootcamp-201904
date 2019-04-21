@@ -26,6 +26,8 @@ const logic = {
                 this.__userToken__ = response.data.token
                 callback()
             } else {
+                this.__userId__ = undefined
+                this.__userToken__ = undefined
                 callback(Error(response.error))
             }
         }.bind(this))

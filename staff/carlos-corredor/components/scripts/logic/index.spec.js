@@ -115,20 +115,16 @@ describe('logic', () => {
         })
 
         describe('login', () => {
-            beforeEach(() => {
-                users.push({
-                    name: name,
-                    surname: surname,
-                    email: email,
-                    password: password
+
+            it('should succeed on correct data', (done) => {
+                logic.registerUser(name, surname, email, password, function(response){
+                    logic.loginUser(email, password, function(response){
+                        expect(response).toBeUndefined()
+                        expect(typeof logic.__userId__).toBe('string')
+                        expect(typeof logic.__userToken__).toBe('string')
+                        done()
+                    })
                 })
-            })
-
-            it('should succeed on correct data', () => {
-                logic.loginUser(email, password)
-
-                expect(logic.__userEmail__).toBe(email)
-                expect(logic.__accessTime__ / 1000).toBeCloseTo(Date.now() / 1000, 1)
             })
 
             it('should fail on wrong email (unexisting user)', () => {
@@ -169,17 +165,6 @@ describe('logic', () => {
         })
 
         describe('retrieve user', () => {
-            beforeEach(() => {
-                users.push({
-                    name: name,
-                    surname: surname,
-                    email: email,
-                    password: password
-                })
-
-                logic.__userEmail__ = email
-            })
-
             it('should succeed on existing user and corect email', () => {
                 const user = logic.retrieveUser()
 

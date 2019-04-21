@@ -116,7 +116,16 @@ describe('user api', () => {
     })
 
     describe('authenticate', () => {
-        // blah blah blah
+        it('should succeed on correct user data', function (done) {
+            userApi.create(name, surname, username, password, function(response){
+                userApi.authenticate(username, password, function(response){
+                    expect(response.status).toBe('OK');
+                    expect(typeof response.data.id).toBe('string');
+                    expect(typeof response.data.token).toBe('string');
+                    done();
+                })
+            })
+        });
     })
 
     describe('update', () => {
