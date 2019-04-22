@@ -45,7 +45,7 @@ const login = new Login(forms[1], function (email, password) {
             
             home.visible = true
         } else {
-            login.error = i18n.errors[languageSelected][error.code]
+            login.error = response.message
         }
     })
 
@@ -83,6 +83,10 @@ const home = new Home(main, function(query) {
             description: duck.description
         }
     })
+}, function(){
+    home.visible = false;
+    landing.visible = true;
+    login.__accesTime__ = {};
 })
 home.visible = false
 
