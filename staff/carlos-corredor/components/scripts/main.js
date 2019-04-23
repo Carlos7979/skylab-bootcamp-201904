@@ -87,6 +87,8 @@ const home = new Home(main, function(query) {
     home.visible = false;
     landing.visible = true;
     login.__accesTime__ = {};
+    home.cleanlist()
+    home.cleanDetail()
 })
 home.visible = false
 

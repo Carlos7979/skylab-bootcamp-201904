@@ -23,6 +23,14 @@ class Home extends Component {
 
     }
 
+    cleanlist(){
+        main.querySelector('ul').innerHTML = ''
+    }
+
+    cleanDetail(){
+        this.detail = null
+    }
+
     set results(results) {
         this.__detail__.visible = false
         this.__results__.items = results
@@ -30,9 +38,14 @@ class Home extends Component {
     }
 
     set detail(detail) {
-        this.__results__.visible = false
-        this.__detail__.item = detail
-        this.__detail__.visible = true
+        if(detail) {
+            this.__results__.visible = false
+            this.__detail__.item = detail
+            this.__detail__.visible = true
+        } else {
+            this.__results__.visible = true
+            this.__detail__.visible = false
+        }
     }
 
     set name(name) {
