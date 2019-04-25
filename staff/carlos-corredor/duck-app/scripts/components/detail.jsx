@@ -1,0 +1,10 @@
+function Detail ({onDetail: { title, image, description, price }}) {
+    return <>
+        <section>
+        <h2>{title}</h2>
+        <img src={image} />
+        <p>{description}</p>
+        <span>{price}</span>
+        </section>
+    </>
+}

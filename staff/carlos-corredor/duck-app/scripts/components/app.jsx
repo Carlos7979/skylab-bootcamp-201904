@@ -21,11 +21,6 @@ class App extends Component {
         }
     }
 
-// handleLogout = () => {
-//     logic.logoutUser()
-//     this.setState({ visible: 'landing'})
-// }
-
     handleLogin = (username, password) => {
         try {
             logic.loginUser(username, password, error => {
@@ -70,7 +65,7 @@ class App extends Component {
         return <>
             <LanguageSelector onLanguageChange={handleLanguageChange} lang={lang}/>
 
-            {visible === 'home' && <Logout onLogout={handleLogout} />}
+            {visible === 'home' && <Logout onLogout={handleLogout} lang={lang}/>}
 
             {visible === 'landing' && <Landing lang={lang} onRegister={handleRegisterNavigation} onLogin={handleLoginNavigation} />}
 
