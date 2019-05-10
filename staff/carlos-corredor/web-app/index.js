@@ -2,8 +2,10 @@ const express = require('express')
 const bodyParser = require('./body-parser')
 const favicon = require('serve-favicon')
 const path = require('path')
+const render = require('./render')
+const logic = require('./logic')
 
-const { argv: [, , port] } = process
+const { argv: [, , port = 8080] } = process
 
 const app = express()
 
@@ -12,25 +14,10 @@ app.use(favicon(path.join('public', 'images', 'Mate-6-turtle-icon.png')))
 
 let user = {}
 
-function render(body) {
-    return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Express practice</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        ${body}
-    </body>
-    </html>`
-}
 
 app.get('/', (req, res) =>
     res.send(render(`<h1>Hola :)</h1>
-    <img src="/images/Mate-6-turtle-icon.png"><h2>Express practice</h2></img>
+    <div><img src="/images/Mate-6-turtle-icon.png"><h2>Express practice</h2></img></div>
     <h3>Please choose <a href="/register">Register</a> or <a href="/login">Login</a></h3>`))
 )
 

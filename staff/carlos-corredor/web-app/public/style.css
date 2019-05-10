@@ -3,3 +3,13 @@
     border-radius: 1em;
     padding: 1em;
 }
+
+div {
+    display: flex;
+    justify-content: baseline;
+    
+}
+
+/* div {
+    display: inline
+} */
