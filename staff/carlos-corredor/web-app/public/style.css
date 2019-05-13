@@ -4,12 +4,6 @@
     padding: 1em;
 }
 
-div {
-    display: flex;
-    justify-content: baseline;
-    
+img {
+    max-width: 200px;
 }
-
-/* div {
-    display: inline
-} */

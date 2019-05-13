@@ -1,0 +1,16 @@
+mixin favorites({url, title, image, price, id})
+
+        
+    
+    h2 #{title}
+    if favs
+        each fav in favs
+            if id === fav
+                button delete from fav
+    else
+        button add to fav
+    a(href=url)
+        img(src=image)
+    p=price
+
+    

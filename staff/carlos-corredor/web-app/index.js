@@ -1,61 +1,129 @@
 const express = require('express')
-const bodyParser = require('./body-parser')
-const favicon = require('serve-favicon')
-const path = require('path')
-const render = require('./render')
-const logic = require('./logic')
+const { injectLogic, checkLogin } = require('./middlewares')
+const render = require('./components/render')
+const package = require('./package.json')
+// const { Register, Home } = require('./components')
+const bodyParser = require('body-parser')
+const session = require('express-session')
+
+
+const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 const { argv: [, , port = 8080] } = process
 
 const app = express()
 
-app.use(express.static('public'))
-app.use(favicon(path.join('public', 'images', 'Mate-6-turtle-icon.png')))
+app.set('view engine', 'pug')
+app.set('views', 'components')
 
-let user = {}
+app.use(session({
+    secret: 'my super secret phrase to encrypt my session',
+    resave: true,
+    saveUninitialized: true
+}))
 
+app.use(express.static('public'), injectLogic)
 
-app.get('/', (req, res) =>
-    res.send(render(`<h1>Hola :)</h1>
-    <div><img src="/images/Mate-6-turtle-icon.png"><h2>Express practice</h2></img></div>
-    <h3>Please choose <a href="/register">Register</a> or <a href="/login">Login</a></h3>`))
-)
-
-app.get('/register', (req, res) =>
-    res.send(render(`<form method="post" action="/register">
-            <input type="text" name="username">
-            <input type="password" name="password">
-            <button>Register</button>
-        </form>`))
-)
-
-app.post('/register', bodyParser, (req, res) => {
-
-    const { username, password } = req.body
-
-    user.username = username
-    user.password = password
-
-    res.send(render(`<p>Ok, user correctly registered, you can now proceed to <a href="/login">login</a></p>`))
+app.get('/', checkLogin('/home'), (req, res) => {
+    res.render('landing')
 })
 
-app.get('/login', (req, res) =>
-    res.send(render(`<form method="post" action="/login">
-            <input type="text" name="username">
-            <input type="password" name="password">
-            <button>Login</button>
-        </form>`))
-)
-
-app.post('/login', bodyParser, (req, res) => {
-    const { username, password } = req.body
-
-    if (username === user.username && password === user.password) res.redirect('/home')
-    else res.send(render(`<p>Wrong credentials.</p>`))
+app.get('/register', checkLogin('/home'), (req, res) => {
+    res.render('register')
 })
 
-app.get('/home', (req, res) =>
-    res.send(render(`<h1>Hola :), ${user.username}!!`))
+app.post('/register', [checkLogin('/home'), urlencodedParser], (req, res) => {
+    const { body: { name, surname, email, password }, logic } = req
+
+    try {
+        logic.registerUser(name, surname, email, password)
+            .then(() => res.redirect('/login'))
+            .catch(({ message }) => {
+                res.render('register', { name, surname, email, message })
+            })
+    } catch ({ message }) {
+        res.render('register', { name, surname, email, message })
+    }
+})
+
+app.get('/login', checkLogin('/home'), (req, res) =>
+    res.render('login')
 )
 
-app.listen(port)
+app.post('/login', [checkLogin('/home'), urlencodedParser], (req, res) => {
+    const { body: { email, password }, logic, session } = req
+
+    try {
+        logic.loginUser(email, password)
+            .then(() => {
+                session.token = logic.__userToken__
+
+                res.redirect('/home')
+            })
+            .catch(({ message }) => res.render('login', { email, message }))
+    } catch ({ message }) {
+        res.render('login', { email, message })
+    }
+})
+
+app.get('/home', checkLogin('/', false), (req, res) => {
+    const { logic } = req
+
+    logic.retrieveUser()
+        .then(({ name }) => res.render('home', { name }))
+        .catch(({ message }) => res.render('home', { message }))
+})
+
+app.get('/home/search', checkLogin('/', false), urlencodedParser, (req, res) => {
+    const { query: { query }, logic, session } = req
+
+    session.query = query
+
+    logic.searchDucks(query)
+        .then(ducks => {
+            ducks = ducks.map(({ id, title, imageUrl: image, price }) => ({ url: `/home/duck/${id}`, title, image, price, id }))
+
+            return logic.retrieveUser()
+                .then(({ name, favs }) => res.render('home', { name, favs, query, ducks }))
+        })
+        .catch(({ message }) => res.render('home', { message }))
+})
+
+app.get('/home/favorites', checkLogin('/', false), urlencodedParser, (req, res) => {
+    const { query: { query }, logic, session } = req
+
+    session.query = query
+
+    logic.retrieveFavDucks()
+        .then(favs => {
+            favs = favs.map(({ id, title, imageUrl: image, price }) => ({ url: `/home/duck/${id}`, title, image, price, id }))
+
+            return logic.retrieveUser()
+                .then(({ name, favs }) => res.render('home', { name, favs, query }))
+        })
+        .catch(({ message }) => res.render('home', { message }))
+})
+
+app.get('/home/duck/:id', checkLogin('/', false), (req, res) => {
+    const { params: { id }, logic, session: { query } } = req
+
+    logic.retrieveDuck(id)
+        .then(({ title, imageUrl: image, description, price }) => {
+            const duck = { title, image, description, price }
+
+            return logic.retrieveUser()
+                .then(({ name }) => res.render('home', { query, name, duck }))
+        })
+})
+
+app.post('/logout', (req, res) => {
+    req.session.destroy()
+
+    res.redirect('/')
+})
+
+app.use(function (req, res, next) {
+    res.redirect('/')
+})
+
+app.listen(port, () => console.log(`${package.name} ${package.version} up on port ${port}`))

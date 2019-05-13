@@ -1,0 +1,29 @@
+extends ../index
+
+include ../feedback/index
+include ../search/index
+include ../results/index
+include ../detail/index
+include ../favorites/index
+
+
+
+block content
+    h1 Hola, #{name}!
+    if ducks
+        if !ducks.length
+            +feedback(`No there are results for ${query}`)
+    if message
+        +feedback(message)
+    form(action='/logout' method='post')
+        button Logout
+    +search
+    if ducks
+        each item in ducks
+            +results(item, favs)
+    if duck
+        +detail(duck)
+    if favs
+         each id in favs
+            +favorites(id)
+
