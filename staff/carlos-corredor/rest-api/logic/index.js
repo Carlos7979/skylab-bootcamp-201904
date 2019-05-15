@@ -29,9 +29,10 @@ const logic = {
         ])
 
         validate.email(email)
-
+        
         return userApi.authenticate(email, password)
             .then(response => {
+                
                 if (response.status === 'OK') return response.data.token
                 else throw new LogicError(response.error)
             })

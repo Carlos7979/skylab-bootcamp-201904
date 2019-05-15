@@ -9,19 +9,19 @@ const jsonParser = bodyParser.json()
 const router = express.Router()
 
 router.post('/users', jsonParser, (req, res) => {
-    const { body: { name, surname, email, password } } = req
+    const { body: { name, surname, username, password } } = req
 
     handleErrors(() =>
-        logic.registerUser(name, surname, email, password)
-            .then(() => res.status(201).json({ message: 'Ok, user registered. ' })),
+        logic.registerUser(name, surname, username, password)
+            .then(() => res.status(201).json({ message: 'Ok, user registered.' })),
         res)
 })
 
 router.post('/users/auth', jsonParser, (req, res) => {
-    const { body: { email, password } } = req
-
+    const { body: { username, password } } = req
+    
     handleErrors(() =>
-        logic.authenticateUser(email, password)
+        logic.authenticateUser(username, password)
             .then(token => res.json({ token })),
         res)
 })

@@ -23,7 +23,7 @@ const userApi = {
             { name: 'username', value: username, type: 'string', notEmpty: true },
             { name: 'password', value: password, type: 'string', notEmpty: true }
         ])
-
+        
         return call(`${this.__url__}/auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
