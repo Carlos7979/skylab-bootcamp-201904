@@ -1,6 +1,6 @@
 const duckApi = require('.')
 
-xdescribe('duck api', () => {
+describe('duck api', () => {
     describe('search ducks', () => {
         it('should succeed on correct query', async () => {
             const ducks = await duckApi.searchDucks('yellow')
